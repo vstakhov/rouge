@@ -21,10 +21,19 @@ module Rouge
         rule id, Keyword::Namespace, :statement
         mixin :base
       end
+      state :array do
+        rule /\]/, Punctuation, :pop!
+        rule /,/, Punctuation
+        mixin :base
+      end
 
       state :statement do
         rule /{/ do
           token Punctuation; pop!; push :block
+        end
+
+        rule /\[/ do
+          token Punctuation; pop!; push :array
         end
 
         rule /;/, Punctuation, :pop!
@@ -32,23 +41,23 @@ module Rouge
         mixin :base
       end
 
-	  state :quote do
-		rule /\$\{?[\w_\-]+\}?/, Name::Variable
+      state :quote do
+        rule /\$\{?[\w_\-]+\}?/, Name::Variable
         rule /\\./, Str::Escape
-		rule /"/, Punctuation, :pop!
+        rule /"/, Punctuation, :pop!
         rule /[^"]+/, Str # catchall
-	  end
+      end
 
       state :base do
         rule /\s+/, Text
 
         rule /#.*?\n/, Comment::Single
-		rule %r(/(\\\n)?[*].*?[*](\\\n)?/)m, Comment::Multiline
+        rule %r(/(\\\n)?[*].*?[*](\\\n)?/)m, Comment::Multiline
         rule /(true|false|on|off|yes|no)/, Keyword::Constant
-		rule /\.[^\s\.]+/, Keyword::Reserved
-		rule /\"/ do
-			token Punctuation; pop!; push :quote 
-		end
+        rule /\.[^\s\.\(\)]+/, Keyword::Reserved
+        rule /\"/ do
+          token Punctuation; push :quote 
+        end
 
         rule /(\d+\.\d*|\d*\.\d+)([eE][+-]?[0-9]+)?j?/, Num::Float
         rule /\d+[eE][+-]?[0-9]+j?/, Num::Float

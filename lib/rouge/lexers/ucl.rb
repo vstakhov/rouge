@@ -54,6 +54,7 @@ module Rouge
 
         rule /#.*?\n/, Comment::Single
         rule %r(/(\\\n)?[*].*?[*](\\\n)?/)m, Comment::Multiline
+        rule /<<(\S+)\n.*\n\1\n/m, Str
         rule /(true|false|on|off|yes|no)/, Keyword::Constant
         rule /\.[^\s\.\(\)]+/, Keyword::Reserved
         rule /\"/ do

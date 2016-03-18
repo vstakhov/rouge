@@ -37,6 +37,7 @@ module Rouge
         end
 
         rule /;/, Punctuation, :pop!
+        rule /\n/, Text, :pop!
 
         mixin :base
       end

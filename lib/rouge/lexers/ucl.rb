@@ -12,22 +12,26 @@ module Rouge
       id = /[^\s$;{}()#]+/
 
       state :root do
+        mixin :multiline
         rule id, Keyword::Namespace, :statement
         mixin :base
       end
       
       state :block do
+        mixin :multiline
         rule /}/, Punctuation, :pop!
         rule id, Keyword::Namespace, :statement
         mixin :base
       end
       state :array do
+        mixin :multiline
         rule /\]/, Punctuation, :pop!
         rule /,/, Punctuation
         mixin :base
       end
 
       state :statement do
+        mixin :multiline
         rule /{/ do
           token Punctuation; pop!; push :block
         end
@@ -46,15 +50,14 @@ module Rouge
         rule /\$\{?[\w_\-]+\}?/, Name::Variable
         rule /\\./, Str::Escape
         rule /"/, Punctuation, :pop!
-        rule /[^"]+/, Str # catchall
+        rule /[^"]+/, Str::Single
       end
 
       state :base do
+        mixin :multiline
         rule /\s+/, Text
 
         rule /#.*?\n/, Comment::Single
-        rule %r(/(\\\n)?[*].*?[*](\\\n)?/)m, Comment::Multiline
-        rule /<<(\S+)\n.*\n\1\n/m, Str
         rule /(true|false|on|off|yes|no)/, Keyword::Constant
         rule /\.[^\s\.\(\)]+/, Keyword::Reserved
         rule /\"/ do
@@ -73,6 +76,10 @@ module Rouge
         rule /[^#\s;{}$\\]+/, Str # catchall
 
         rule /[$;]/, Text
+      end
+      state :multiline do
+        rule %r(/(\\\n)?[*].*?[*](\\\n)?/)m, Comment::Multiline
+        rule /<<(\S+)\n.*\n\1\n/m, Str::Double
       end
     end
   end

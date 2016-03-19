@@ -12,7 +12,7 @@ module Rouge
       id = /[^\s$;{}()#]+/
 
       state :root do
-        rule id, Keyword, :statement
+        rule id, Keyword::Namespace, :statement
         mixin :base
       end
       
@@ -62,11 +62,10 @@ module Rouge
         end
 
         rule /(\d+\.\d*|\d*\.\d+)([eE][+-]?[0-9]+)?j?/, Num::Float
-        rule /\d+[eE][+-]?[0-9]+j?/, Num::Float
-        rule /\-?\d+[kmg]?\b/, Num::Integer
+        rule /\-?\d+[eE][+-]?[0-9]+j?/, Num::Float
+        rule /\-?\d+\.?\d*/, Num::Float
+        rule /\-?\d+[kmgdmsy]?\b/, Num::Integer
 
-
-        rule /[0-9]+[kmg]?\b/i, Num::Integer
         rule /(\/[^\s{^\/]+\/)/, Str::Regex
 
         rule /[:=]/, Punctuation
